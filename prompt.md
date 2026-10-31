@@ -1,0 +1,1 @@
+Build the app described in the agent.md document in the repo root, following the build order in section 19. Start with step 1, resolve the open questions using the stated assumptions unless I answer otherwise, and tick the checklist items you complete.
