@@ -1,9 +1,13 @@
 import { useState } from "react";
+import { MantineProvider, DirectionProvider, createTheme } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
+import "@fontsource/vazirmatn";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 
 function App() {
+  const { i18n } = useTranslation();
   const [greetMsg, setGreetMsg] = useState("");
   const [name, setName] = useState("");
 
@@ -12,8 +16,16 @@ function App() {
     setGreetMsg(await invoke("greet", { name }));
   }
 
+  const isRtl = i18n.language === 'fa' || i18n.language === 'ar';
+
+  const theme = createTheme({
+    fontFamily: isRtl ? 'Vazirmatn, sans-serif' : 'system-ui, sans-serif',
+  });
+
   return (
-    <main className="container">
+    <DirectionProvider initialDirection={isRtl ? 'rtl' : 'ltr'}>
+      <MantineProvider theme={theme}>
+        <main className="container" dir={isRtl ? 'rtl' : 'ltr'}>
       <h1>Welcome to Tauri + React</h1>
 
       <div className="row">
@@ -44,7 +56,9 @@ function App() {
         <button type="submit">Greet</button>
       </form>
       <p>{greetMsg}</p>
-    </main>
+        </main>
+      </MantineProvider>
+    </DirectionProvider>
   );
 }
 
