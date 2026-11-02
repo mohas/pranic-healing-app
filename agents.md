@@ -1,13 +1,13 @@
 Energy Healing App: Feature Checklist & Build Spec
 A build brief to hand back to Claude. Work through it top to bottom, tick items as they are finished, and resolve the open questions in section 20 before or during the build.
 1. Project Constraints
-[ ] Language: TypeScript everywhere, strict mode on
-[ ] UI: React with Tauri v2, mobile first (iOS and Android are the first targets, desktop later); design every screen for a phone first, then scale up
-[ ] Required libraries: zustand (all client state) and dayjs (all date/time handling, with locale plugins)
-[ ] UI library: Mantine (components, theming, dark mode, RTL through its direction provider, dates through @mantine/dates, which is dayjs-based); forms with @mantine/form
-[ ] zod defines every entity once as a schema; TypeScript types are inferred from it and the same schemas validate forms and API responses
-[ ] Routing: a custom zustand router, with no routing library (details in section 16)
-[ ] i18n from day 1: no hard-coded user-facing strings anywhere, ever, days and calendars should be wrapped in locale aware components and return localized date time views, calendars or date pickers; both LTR and RTL layouts are supported
+[x] Language: TypeScript everywhere, strict mode on
+[x] UI: React with Tauri v2, mobile first (iOS and Android are the first targets, desktop later); design every screen for a phone first, then scale up
+[x] Required libraries: zustand (all client state) and dayjs (all date/time handling, with locale plugins)
+[x] UI library: Mantine (components, theming, dark mode, RTL through its direction provider, dates through @mantine/dates, which is dayjs-based); forms with @mantine/form
+[x] zod defines every entity once as a schema; TypeScript types are inferred from it and the same schemas validate forms and API responses
+[x] Routing: a custom zustand router, with no routing library (details in section 16)
+[x] i18n from day 1: no hard-coded user-facing strings anywhere, ever, days and calendars should be wrapped in locale aware components and return localized date time views, calendars or date pickers; both LTR and RTL layouts are supported
 [ ] Online only: no offline mode, no local database and no sync for now; the app always talks to the server
 [ ] REST API through fetch: all data goes through a typed API client layer behind repository interfaces (for example PatientRepository, CaseRepository, RecordRepository, plus one repository per component type). A mock adapter with fixture data is used first and is switched to the real API later by configuration, without touching the UI
 [ ] The server-side technology is open (CouchDB may be used there later); the client must not depend on it
@@ -22,21 +22,21 @@ A build brief to hand back to Claude. Work through it top to bottom, tick items 
 • General chat: a chat page between one patient and one healer, not related to any Case, where they exchange text messages
 • Supervision link: a supervisor healer is allowed to view the work of another healer, supervisors are assigned case by case not user by user, also one case may have several supervisors
 3. Data Model (TypeScript types)
-[ ] User: id, email, display name, handle (short shareable code that other healers use to request supervision), preferred language, timezone, avatar
-[ ] Patient relationship: links a healer to a patient (a patient can be a patient of several healers; a healer can also be a patient of someone else)
-[ ] Case: id, patientId, title, description, diagnosis (free text written by the healer), status (open/closed/abandoned), openedAt, closedAt, owning healerId
-[ ] SupervisionLink: caseId, supervisorId, status (pending/active/ended), createdAt, endedAt, endReason (supervision is per Case, never per user)
-[ ] Record: the main object, with common data only: id, caseId, patientId, kind (healing session, standalone measurement, note, status change), date/time, authorId, status (created/draft/completed), and a status-change Record carries one of: created, open, closed, reopened, abandoned. No component data lives on the Record, and a Record may have no components at all
-[ ] Component base (shared by every component below): id, type, caseId, patientId, recordId (optional, so a component can exist without a Record), authorId, createdAt, updatedAt; each component type is its own API resource, filterable by patient, case, record, type, author and time
-[ ] ChakraConditions (component): phase (none = measured outside a healing, before, after), measuredAt, one reading per chakra with two states: activity (unscanned / n / ua / oa) and second state (unscanned / n / d / c), stored as plain codes
-[ ] Symptom (component, a persistent identity inside a Case): id, caseId, title (required), status (active/completed), completedAt, completedInRecordId; the same Symptom is measured in many Records
-[ ] SymptomEntry (one measurement of a Symptom in one Record): id, symptomId, recordId, note, severity 1-10, pain 1-10, pin on the body (view front/back, normalized x/y)
-[ ] Memo (component, text only): id, text, creatorId (healer, supervisor or patient), createdAt, and either caseId (a memo in a Case, optionally with recordId) or chatId (a message in the general chat)
-[ ] GeneralChat: id, patientId, healerId; one per patient and healer pair, not related to any Case; its messages are Memos with a chatId
-[ ] AfterVisitItem (component): id, caseId, recordId (optional), type (medication/exercise/practice/diet/rest/other), title, instructions, frequency, duration, start/end dates, status (pending/in progress/done/dropped), completion log of timestamped check-ins
-[ ] Appointment: id, healerId, patientId, caseId (optional), start, end, status (scheduled/completed/cancelled), notes, recordId (set when converted into a Record)
-[ ] All entities carry id, type, createdAt, updatedAt, createdBy; ids and timestamps are assigned by the server (the mock adapter generates them)
-[ ] Every entity above is defined as a zod schema (one file per entity), and its TypeScript type is inferred with z.infer; request and response DTOs, form values and mock fixtures all reuse these schemas
+[x] User: id, email, display name, handle (short shareable code that other healers use to request supervision), preferred language, timezone, avatar
+[x] Patient relationship: links a healer to a patient (a patient can be a patient of several healers; a healer can also be a patient of someone else)
+[x] Case: id, patientId, title, description, diagnosis (free text written by the healer), status (open/closed/abandoned), openedAt, closedAt, owning healerId
+[x] SupervisionLink: caseId, supervisorId, status (pending/active/ended), createdAt, endedAt, endReason (supervision is per Case, never per user)
+[x] Record: the main object, with common data only: id, caseId, patientId, kind (healing session, standalone measurement, note, status change), date/time, authorId, status (created/draft/completed), and a status-change Record carries one of: created, open, closed, reopened, abandoned. No component data lives on the Record, and a Record may have no components at all
+[x] Component base (shared by every component below): id, type, caseId, patientId, recordId (optional, so a component can exist without a Record), authorId, createdAt, updatedAt; each component type is its own API resource, filterable by patient, case, record, type, author and time
+[x] ChakraConditions (component): phase (none = measured outside a healing, before, after), measuredAt, one reading per chakra with two states: activity (unscanned / n / ua / oa) and second state (unscanned / n / d / c), stored as plain codes
+[x] Symptom (component, a persistent identity inside a Case): id, caseId, title (required), status (active/completed), completedAt, completedInRecordId; the same Symptom is measured in many Records
+[x] SymptomEntry (one measurement of a Symptom in one Record): id, symptomId, recordId, note, severity 1-10, pain 1-10, pin on the body (view front/back, normalized x/y)
+[x] Memo (component, text only): id, text, creatorId (healer, supervisor or patient), createdAt, and either caseId (a memo in a Case, optionally with recordId) or chatId (a message in the general chat)
+[x] GeneralChat: id, patientId, healerId; one per patient and healer pair, not related to any Case; its messages are Memos with a chatId
+[x] AfterVisitItem (component): id, caseId, recordId (optional), type (medication/exercise/practice/diet/rest/other), title, instructions, frequency, duration, start/end dates, status (pending/in progress/done/dropped), completion log of timestamped check-ins
+[x] Appointment: id, healerId, patientId, caseId (optional), start, end, status (scheduled/completed/cancelled), notes, recordId (set when converted into a Record)
+[x] All entities carry id, type, createdAt, updatedAt, createdBy; ids and timestamps are assigned by the server (the mock adapter generates them)
+[x] Every entity above is defined as a zod schema (one file per entity), and its TypeScript type is inferred with z.infer; request and response DTOs, form values and mock fixtures all reuse these schemas
 4. Authentication & Accounts
 [ ] Sign up, log in, log out, password reset (mock-backed for now)
 [ ] Persist the session token safely (zustand store plus Tauri secure storage if available)
@@ -156,32 +156,32 @@ Use a charting library that works well in React/Tauri (suggestion: Recharts, use
 [ ] Patient sees upcoming and past appointments
 [ ] Reminders: in-app for now (real notifications later)
 15. Internationalization (day 1)
-[ ] i18n library (suggestion: i18next with react-i18next), with typed translation keys
-[ ] Namespaced translation files per feature; English is the only shipped language at first, with stub fa and ar locale files from day 1 (not offered to users yet) so RTL layouts are tested early
-[ ] Language switcher in settings; the choice is saved to the user profile
-[ ] Detect initial language from the OS/browser
-[ ] dayjs locales loaded dynamically and kept in sync with the active language; dates, relative times, and calendars all locale-aware
-[ ] Use Intl for numbers and plurals; ICU-style plural handling
-[ ] RTL support from day 1, required even though English ships first: the app supports both LTR and RTL, and RTL applies only to the fa and ar locales (direction follows the active locale and flips at runtime through Mantine's DirectionProvider and the html dir attribute; logical CSS properties, mirrored layout and gestures, body map and charts handled correctly in RTL)
-[ ] Chakra names and all enum labels live in translation files, while stored values stay language-neutral codes (labels for the chakra states are not defined yet, so the stored codes show until then)
-[ ] Locale formatting for fa and ar: numbers and digits through Intl; fa uses the Jalali (Persian) calendar, so dates, calendars and date pickers must support Jalali for fa and Gregorian for the other locales (Mantine's date components are Gregorian, so build a small locale-aware wrapper that renders a Jalali picker for fa, for example with a dayjs Jalali plugin or react-day-picker/persian); digits follow the Intl defaults
-[ ] Self-host a Persian and Arabic capable font (for example Vazirmatn) with the app so nothing loads from a CDN, with per-locale font stacks set in the Mantine theme
+[x] i18n library (suggestion: i18next with react-i18next), with typed translation keys
+[x] Namespaced translation files per feature; English is the only shipped language at first, with stub fa and ar locale files from day 1 (not offered to users yet) so RTL layouts are tested early
+[x] Language switcher in settings; the choice is saved to the user profile
+[x] Detect initial language from the OS/browser
+[x] dayjs locales loaded dynamically and kept in sync with the active language; dates, relative times, and calendars all locale-aware
+[x] Use Intl for numbers and plurals; ICU-style plural handling
+[x] RTL support from day 1, required even though English ships first: the app supports both LTR and RTL, and RTL applies only to the fa and ar locales (direction follows the active locale and flips at runtime through Mantine's DirectionProvider and the html dir attribute; logical CSS properties, mirrored layout and gestures, body map and charts handled correctly in RTL)
+[x] Chakra names and all enum labels live in translation files, while stored values stay language-neutral codes (labels for the chakra states are not defined yet, so the stored codes show until then)
+[x] Locale formatting for fa and ar: numbers and digits through Intl; fa uses the Jalali (Persian) calendar, so dates, calendars and date pickers must support Jalali for fa and Gregorian for the other locales (Mantine's date components are Gregorian, so build a small locale-aware wrapper that renders a Jalali picker for fa, for example with a dayjs Jalali plugin or react-day-picker/persian); digits follow the Intl defaults
+[x] Self-host a Persian and Arabic capable font (for example Vazirmatn) with the app so nothing loads from a CDN, with per-locale font stacks set in the Mantine theme
 [ ] CI/lint check that fails on hard-coded strings and on missing translation keys
 [ ] User-written content (notes, symptoms) is stored as entered and is not translated
 16. Architecture & Tech
 The app is online only and talks to a REST API through fetch. PouchDB was dropped: it would replicate patient data to every device and turn partial sync, per-Case permissions and long-term data growth into client problems. A server-side database (CouchDB or anything else) stays an implementation detail behind the API.
-[ ] Vite + React + TypeScript project scaffolded with Tauri v2, mobile first (run and test on iOS and Android targets first, desktop later), the base project is provided
-[ ] Folder structure by feature (auth, patients, cases, records, components/symptoms, components/chakras, components/memos, components/after-visit, general-chat, body-map, charts, appointments, supervision, api, i18n, shared)
-[ ] UI: Mantine with one shared theme (colors, spacing, dark mode, fonts, direction), @mantine/dates for date inputs, and the app's own wrapper components for anything locale-sensitive (dates, numbers, pickers)
-[ ] Entities and validation: zod schemas for every entity (section 3), reused for form validation (through the @mantine/form zod resolver), API response parsing and mock fixtures
+[x] Vite + React + TypeScript project scaffolded with Tauri v2, mobile first (run and test on iOS and Android targets first, desktop later), the base project is provided
+[x] Folder structure by feature (auth, patients, cases, records, components/symptoms, components/chakras, components/memos, components/after-visit, general-chat, body-map, charts, appointments, supervision, api, i18n, shared)
+[x] UI: Mantine with one shared theme (colors, spacing, dark mode, fonts, direction), @mantine/dates for date inputs, and the app's own wrapper components for anything locale-sensitive (dates, numbers, pickers)
+[x] Entities and validation: zod schemas for every entity (section 3), reused for form validation (through the @mantine/form zod resolver), API response parsing and mock fixtures
 [ ] API client layer: one typed fetch wrapper (base URL, auth header, JSON, error mapping, timeouts, cancellation with AbortController, retry for safe GET requests), hidden behind repository interfaces so the UI never calls fetch directly
 [ ] Mock adapter implementing the same repository interfaces with fixture data, simulated latency and occasional errors, kept in memory for the session; the adapter is chosen by configuration, so switching to the real API is a config change
 [ ] API contract first: define endpoints and DTO types (an OpenAPI spec kept in sync with the TypeScript types, written alongside the mock layer) so the real backend can be built against it
 [ ] Built to scale: every list endpoint is paginated (cursor), filterable by case, record, type and date range, and sortable; chart endpoints return data already shaped for the chart (for example symptom entries per Symptom between two dates), so the client never loads a patient's whole history
-[ ] Zustand stores per domain (auth, patients, cases, records, components, ui, settings) that cache fetched lists by query key with loading, error and stale state; optimistic updates with rollback for quick actions such as chakra taps; stores talk to repositories only
+[x] Zustand stores per domain (auth, patients, cases, records, components, ui, settings) that cache fetched lists by query key with loading, error and stale state; optimistic updates with rollback for quick actions such as chakra taps; stores talk to repositories only
 [ ] Online only: detect lost connection, show an offline banner and disable writes instead of queueing them; drafts autosave to the server with debounced requests
 [ ] Auth: token handling with refresh, stored in secure storage (Tauri), and a global handler for expired sessions
-[ ] Routing: a custom zustand router and no routing library. A navigation store holds a typed stack of screens (a union such as { name: 'case', caseId }) with push, pop, replace and reset, and screens render by selecting the top entry. It includes route guards (login, patient-of-healer checks), the Android back button and iOS swipe-back mapped to pop (exit at the root), a separate stack per main tab, screen transitions, optional persistence of the stack, and one navigate() interface so a library can replace it later
+[x] Routing: a custom zustand router and no routing library. A navigation store holds a typed stack of screens (a union such as { name: 'case', caseId }) with push, pop, replace and reset, and screens render by selecting the top entry. It includes route guards (login, patient-of-healer checks), the Android back button and iOS swipe-back mapped to pop (exit at the root), a separate stack per main tab, screen transitions, optional persistence of the stack, and one navigate() interface so a library can replace it later
 [ ] Forms with @mantine/form and zod resolvers; custom inputs (body map pin, chakra controls, severity slider, symptom entry editor) are written as value/onChange components and dropped into forms through getInputProps, with a small Field helper for label and error layout
 [ ] Mobile-first layout and an accessible design (safe areas, large touch targets, one-handed use, keyboard navigation, ARIA, contrast, scalable text)
 [ ] Light and dark themes

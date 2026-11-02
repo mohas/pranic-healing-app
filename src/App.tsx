@@ -1,50 +1,57 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
+import { MantineProvider, DirectionProvider, createTheme, AppShell, Group, Button, Container } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
+import "@fontsource/vazirmatn";
+import { useRouterStore } from "./shared/router";
 import "./App.css";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const { i18n } = useTranslation();
+  const { screens, replace } = useRouterStore();
+  const currentScreen = screens[screens.length - 1];
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+  const isRtl = i18n.language === 'fa' || i18n.language === 'ar';
+
+  const theme = createTheme({
+    fontFamily: isRtl ? 'Vazirmatn, sans-serif' : 'system-ui, sans-serif',
+  });
+
+  const renderScreen = () => {
+    switch (currentScreen.name) {
+      case 'home':
+        return <div>Home Screen</div>;
+      case 'profile':
+        return <div>Profile Screen</div>;
+      case 'settings':
+        return <div>Settings Screen</div>;
+      default:
+        return <div>Unknown Screen</div>;
+    }
+  };
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+    <DirectionProvider initialDirection={isRtl ? 'rtl' : 'ltr'}>
+      <MantineProvider theme={theme}>
+        <AppShell
+          header={{ height: 60 }}
+          padding="md"
+          dir={isRtl ? 'rtl' : 'ltr'}
+        >
+          <AppShell.Header>
+            <Group h="100%" px="md">
+              <Button variant={currentScreen.name === 'home' ? 'filled' : 'light'} onClick={() => replace({ name: 'home' })}>Home</Button>
+              <Button variant={currentScreen.name === 'profile' ? 'filled' : 'light'} onClick={() => replace({ name: 'profile' })}>Profile</Button>
+              <Button variant={currentScreen.name === 'settings' ? 'filled' : 'light'} onClick={() => replace({ name: 'settings' })}>Settings</Button>
+            </Group>
+          </AppShell.Header>
 
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
+          <AppShell.Main>
+            <Container>
+              {renderScreen()}
+            </Container>
+          </AppShell.Main>
+        </AppShell>
+      </MantineProvider>
+    </DirectionProvider>
   );
 }
 
